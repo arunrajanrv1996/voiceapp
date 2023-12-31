@@ -8,7 +8,6 @@ class Config():
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 class LocalDevelopmentConfig(Config):
-    SQLITE_DB_DIR = os.path.join(basedir, "../db_directory")
     connection_string = "Driver={ODBC Driver 18 for SQL Server};Server=tcp:voiceanalyser-server.database.windows.net,1433;Database=voiceanalyzer;Uid=arunrajanrv;Pwd=Kingarun18;Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;"
     SQLALCHEMY_DATABASE_URI = "mssql+pyodbc:///?odbc_connect=%s" % connection_string
 
