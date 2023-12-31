@@ -1,0 +1,308 @@
+from flask import current_app as app, render_template, jsonify, request
+import os, json
+import subprocess
+from werkzeug.security import check_password_hash, generate_password_hash
+from application.models import db, User, UserTranscription
+from flask_security import  current_user,auth_required
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+import datetime
+import spacy
+from collections import Counter
+
+nlp = spacy.load("en_core_web_sm")
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+
+def cuser_to_dict(user):
+    return {
+        'id': user.id,
+        'username': user.username,
+        'email': user.email,
+    }
+
+def puser_to_dict(user):
+    return {
+        'id': user.id,
+        'username': user.username,
+        'email': user.email,
+        'image': user.image,
+    }
+
+def transcript_to_dict(transcript):
+    return {
+        'id': transcript.id,
+        'text': transcript.transcription,
+        'language': transcript.language,
+        'user_id': transcript.user_id,
+        'created_on': transcript.time,
+    }
+
+@app.route('/userlogin', methods=['POST'])
+def userlogin():
+    post_data = request.get_json()
+    username = post_data.get('username')
+    password = post_data.get('password')
+
+    with app.app_context():
+        user_datastore = app.security.datastore
+        user = user_datastore.find_user(username=username)
+
+        if not user:
+            app.logger.info(f"No user found for username: {username}")
+            return jsonify({'message': 'No user found!'})
+
+        if check_password_hash(user.password, password):
+            app.logger.info("Password validation successful")
+            return jsonify({"token": user.get_auth_token()})
+        else:
+            app.logger.warning("Password validation failed")
+            return jsonify({"message": "Wrong Password"})
+
+
+@app.route("/userprofile", methods=['POST','PUT','GET'])
+@auth_required('token')
+def userprofile():
+    if request.method=='GET':
+        user=User.query.filter_by(id=current_user.id).first()
+        return jsonify(puser_to_dict(user))
+    if request.method=='PUT':
+        post_data = request.get_json()
+        image = post_data.get('image')
+        password = post_data.get('password')
+        user=User.query.filter_by(id=current_user.id).first()
+        if not user:
+            return jsonify({'message': 'No user logged in'})
+        if image:
+            user.image=image
+            db.session.commit()
+        if password:
+            user.password=generate_password_hash(password)
+            db.session.commit()
+        return jsonify({'message': 'User updated successfully!'})
+
+@app.route('/currentuser/')
+@auth_required('token')
+def currentuser():
+    user=User.query.filter_by(id=current_user.id).first()
+    if not user:
+        return jsonify({'message': 'No user logged in'})
+    return jsonify(cuser_to_dict(user))
+
+@app.route('/createuser/')
+def createuser():
+    user=User.query.all()
+    return jsonify([cuser_to_dict(user) for user in user]) 
+
+@app.route('/registeruser/', methods=['POST'])
+def registeruser():
+    post_data = request.get_json()
+    username = post_data.get('username')
+    email = post_data.get('email')
+    password = post_data.get('password')
+    image = post_data.get('image')
+    if not username:
+        return jsonify({'message': 'Username is required'})
+    if not email:
+        return jsonify({'message': 'Email is required'})
+    if not password:
+        return jsonify({'message': 'Password is required'})
+    user = User.query.filter_by(username=username,email=email).first()
+    if user:
+        return jsonify({'message': 'Username already exists'})
+    with app.app_context():
+        user_datastore = app.security.datastore
+        if not user_datastore.find_user(username=username) and not user_datastore.find_user(email=email):
+            user_datastore.create_user(username=username, email=email,image=image, password=generate_password_hash(password))
+            db.session.commit()
+            user = user_datastore.find_user(username=username)
+            role = user_datastore.find_role('user')
+            user_datastore.add_role_to_user(user, role)
+            db.session.commit()
+
+    return jsonify({'message': 'User created successfully!'})
+
+
+@app.route('/usertranscript')
+@auth_required('token')
+def usertranscript():
+    user=UserTranscription.query.filter_by(user_id=current_user.id).order_by(UserTranscription.time.desc()).limit(30)
+    return jsonify([transcript_to_dict(user) for user in user])
+
+
+@app.route('/usertranscriptanalysis')
+@auth_required('token')
+def compute_frequent_words_and_phrases():
+    user_id = current_user.id  
+
+    # Calculate the most frequently used words for the current user
+    user_transcriptions = UserTranscription.query.filter_by(user_id=user_id).all()
+    all_transcriptions = " ".join([transcription.transcription for transcription in user_transcriptions])
+    doc = nlp(all_transcriptions)
+    frequent_words = [token.text for token in doc if token.is_alpha and not token.is_stop]
+    frequent_words_counter = Counter(frequent_words)
+    frequent_words_user = dict(frequent_words_counter.most_common(10))  # Adjust the number as needed
+
+    # Calculate the most frequently used words across all users
+    all_transcriptions = " ".join([transcription.transcription for transcription in UserTranscription.query.all()])
+    doc_all_users = nlp(all_transcriptions)
+    frequent_words_all_users = Counter([token.text for token in doc_all_users if token.is_alpha and not token.is_stop])
+    frequent_words_all_users = dict(frequent_words_all_users.most_common(10))  # Adjust the number as needed
+
+    return jsonify({'frequent_words_user': frequent_words_user, 'frequent_words_all_users': frequent_words_all_users})
+
+@app.route('/useruniquephrases')
+@auth_required('token')
+def get_user_unique_phrases():
+    user_id = current_user.id  
+
+    # Retrieve all transcriptions for the current user
+    user_transcriptions = UserTranscription.query.filter_by(user_id=user_id).all()
+
+    # Extract and count phrases from the transcriptions
+    all_phrases = []
+    for transcription in user_transcriptions:
+        phrases = extract_phrases(transcription.transcription)
+        all_phrases.extend(phrases)
+
+    # Count the frequency of each phrase
+    phrase_counts = Counter(all_phrases)
+
+    # Extract unique phrases used only once
+    unique_phrases = [phrase for phrase, count in phrase_counts.items() if count == 1]
+
+    # Return the first 3 unique phrases (or all if there are fewer than 3)
+    return jsonify({'user_unique_phrases': unique_phrases[:3]})
+
+def extract_phrases(text):
+    # You can customize this function based on your requirements for extracting phrases
+    doc = nlp(text)
+    phrases = [chunk.text for chunk in doc.noun_chunks if len(chunk.text.split()) >= 3]
+    return phrases
+
+
+
+@app.route('/similarusers')
+@auth_required('token')
+def find_similar_users():
+    current_user_id = current_user.id  
+
+    # Retrieve transcriptions for the current user
+    current_user_transcriptions = UserTranscription.query.filter_by(user_id=current_user_id).all()
+
+    if len(current_user_transcriptions) == 0:
+        return jsonify({'similar_users': []})
+
+    # Extract text from transcriptions
+    current_user_text = " ".join([transcription.transcription for transcription in current_user_transcriptions])
+
+    # Retrieve transcriptions for all users (excluding the current user)
+    all_users_transcriptions = UserTranscription.query.filter(UserTranscription.user_id != current_user_id).all()
+
+    if len(all_users_transcriptions) == 0:
+        return jsonify({'similar_users': []})
+
+    # Create a list of user texts
+    all_users_texts = [" ".join([transcription.transcription for transcription in UserTranscription.query.filter_by(user_id=user_transcription.user_id).all()]) for user_transcription in all_users_transcriptions]
+
+    # Calculate TF-IDF vectors for the current user and all users
+    vectorizer = TfidfVectorizer()
+    current_user_vector = vectorizer.fit_transform([current_user_text])
+    all_users_vectors = vectorizer.transform(all_users_texts)
+
+    # Calculate cosine similarity between the current user and all users
+    similarities = cosine_similarity(current_user_vector, all_users_vectors)[0]
+
+    # Get the indices of users with the highest similarity
+    most_similar_user_indices = similarities.argsort()[:-4:-1]  # Get top 3 most similar users
+
+    # Retrieve user information for the most similar users
+    most_similar_users = [User.query.get(all_users_transcriptions[i].user_id) for i in most_similar_user_indices]
+
+    # Convert user information to a dictionary format
+    similar_users_info = []
+    for i in range(len(most_similar_users)):
+        if len(similar_users_info)==5:
+            break
+        if most_similar_users[i].username != current_user.username:
+            similar_users_info.append(most_similar_users[i].username)
+    similar_users_info=list(set(similar_users_info))
+
+    return jsonify({'similar_users': similar_users_info})
+
+
+
+@app.route('/speech/<lang>', methods=['POST'])
+def speech(lang):
+    user_id = request.form.get('user_id')
+    audio_file = request.files['audio']
+
+    # Create the directory if it doesn't exist
+    audio_dir = os.path.join(app.root_path, 'static', 'js', 'audio')
+    os.makedirs(audio_dir, exist_ok=True)
+
+    # Save the audio file to a known location with Ogg extension
+    audio_file_path = os.path.join(audio_dir, 'audio.ogg')
+    audio_file.save(audio_file_path)
+    try:
+        transcription = transcribe_audio_with_whisper(audio_file_path,lang)
+
+
+        if transcription is not None:
+            # Read the text from the existing JSON file
+            json_file_path = os.path.join(app.root_path, 'audio.json')
+            with open(json_file_path, 'r') as json_file:
+                json_data = json.load(json_file)
+                text_from_json = json_data.get('text', '')
+            if user_id!="null":
+                transcript = UserTranscription(transcription=text_from_json,language=lang,user_id=int(user_id),time=datetime.datetime.now())
+                db.session.add(transcript)
+                db.session.commit()
+                return jsonify({'text': text_from_json})
+            return jsonify({'text': text_from_json})
+        else:
+            return jsonify({'error': 'Error during transcription'}), 500
+    except Exception as e:
+        return jsonify({'error': f'Error: {e}'}), 500
+    finally:
+        # Delete the audio file
+        os.remove(audio_file_path)
+        os.remove("audio.json")
+        os.remove("audio.txt")
+        os.remove("audio.srt")
+        os.remove("audio.vtt")
+        os.remove("audio.tsv")
+
+    
+
+
+
+
+def transcribe_audio_with_whisper(audio_path,lang):
+    # Construct the Whisper command
+    if lang!="English":
+        whisper_command = ["whisper", audio_path,"--language", lang,"--task","translate","--model","tiny"]
+    else:
+        whisper_command = ["whisper", audio_path,"--language", lang,"--model","tiny"]
+
+    try:
+        # Execute the Whisper command
+        process = subprocess.Popen(whisper_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        output, error = process.communicate()
+
+        # Check if the process was successful
+        if process.returncode == 0:
+            # Extract the transcription from the output
+            transcription = output.decode('utf-8').strip()
+            return transcription
+        else:
+            # Print the error if the process failed
+            print(f"Error during transcription:\n{error.decode('utf-8')}")
+            return None
+
+    except Exception as e:
+        print(f"Error: {e}")
+        return None
