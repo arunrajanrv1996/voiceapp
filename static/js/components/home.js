@@ -107,7 +107,6 @@ const home = Vue.component("home", {
     this.setUpAudio();
     if (localStorage.getItem("user_id")) {
       this.fetchtranscript();
-      this.fetchcuser();
     }
   },
   methods: {

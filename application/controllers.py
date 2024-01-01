@@ -67,7 +67,7 @@ def userlogin():
         if check_password_hash(user.password, password):
             app.logger.info("Password validation successful")
             g.user = user
-            return jsonify({"user_id": user.id})
+            return jsonify({"user_id": user.id,"token": user.get_auth_token()})
         else:
             app.logger.warning("Password validation failed")
             return jsonify({"message": "Wrong Password"})
@@ -75,6 +75,7 @@ def userlogin():
 
 # Define the route for user profile
 @app.route("/userprofile/<id>", methods=['POST','PUT','GET'])
+@auth_required('token')
 def userprofile(id):
     if request.method=='GET':
         user=User.query.filter_by(id=id).first()
@@ -267,6 +268,12 @@ def speech(lang):
             file=audio_file_open, 
             response_format="json",
             prompt="i am talking in"+lang
+            )
+        elif lang=="":
+            transcript = client.audio.translations.create(
+            model="whisper-1", 
+            file=audio_file_open, 
+            response_format="json"
             )
         else:
             transcript = client.audio.translations.create(

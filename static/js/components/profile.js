@@ -287,6 +287,7 @@ const Profile = Vue.component("profile", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
+          Authorization: localStorage.getItem("token"),
         },
       })
         .then((response) => {
