@@ -136,6 +136,9 @@ const Profile = Vue.component("profile", {
   },
   methods: {
     deleteaccount() {
+      if (!confirm("Are you sure you want to delete your account?")) {
+        return;
+      }
       fetch(`/deleteuser/${this.user_id}`, {
         method: "DELETE",
         headers: {
