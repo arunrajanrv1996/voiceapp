@@ -283,7 +283,7 @@ const Profile = Vue.component("profile", {
         });
     },
     fetchuser() {
-      fetch(`/userprofile/${this.user_id}`, {
+      fetch(`/userprofile/`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
