@@ -77,7 +77,7 @@ def userprofile(id):
         post_data = request.get_json()
         image = post_data.get('image')
         password = post_data.get('password')
-        user=User.query.filter_by(id=1).first()
+        user=User.query.filter_by(id=id).first()
         if not user:
             return jsonify({'message': 'No user logged in'})
         if image:
