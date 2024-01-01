@@ -18,6 +18,7 @@ const Profile = Vue.component("profile", {
               <h5 class="profile-details">Username: {{user.username}}</h5>
               <h6 class="profile-details">Email: {{user.email}}</h6>
               <button class="upload-button" @click="showUploadForm">Update</button>
+              <button class="cancel-button" @click="deleteaccount">Delete account</button>
               <div v-if="isModalVisible" class="custom-modal-overlay">
                 <div class="custom-modal">
                   <div class="modal-header">
@@ -134,6 +135,27 @@ const Profile = Vue.component("profile", {
     };
   },
   methods: {
+    deleteaccount() {
+      fetch(`/deleteuser/${this.user_id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => {
+          if (response.ok) {
+            alert("Account deleted successfully");
+            localStorage.removeItem("user_id");
+            this.$router.push("/login");
+            location.reload();
+          } else {
+            throw new Error("No user found");
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
     fetchSimilarUsers() {
       fetch(`/similarusers/${this.user_id}`, {
         method: "GET",

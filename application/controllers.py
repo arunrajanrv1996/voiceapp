@@ -2,7 +2,7 @@ from flask import current_app as app, render_template, jsonify, request,g
 import os, json
 import subprocess
 from werkzeug.security import check_password_hash, generate_password_hash
-from application.models import db, User, UserTranscription
+from application.models import db, User, UserTranscription,UserRoles
 from flask_security import  current_user,auth_required
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
@@ -52,6 +52,25 @@ def transcript_to_dict(transcript):
     }
 
 
+# Define the route for user deletion
+@app.route('/deleteuser/<id>', methods=['DELETE'])
+def deleteuser(id):
+    user=User.query.filter_by(id=id).first()
+    if not user:
+        return jsonify({'message': 'No user found!'})
+    usertranscript=UserTranscription.query.filter_by(user_id=id).all()
+    role = UserRoles.query.filter_by(user_id=id).first()
+    db.session.delete(role)
+    db.session.commit()
+    for i in usertranscript:
+        db.session.delete(i)
+        db.session.commit()
+    db.session.delete(user)
+    db.session.commit()
+    return jsonify({'message': 'User deleted successfully!'})
+
+
+# Define the route for user resetpassword
 @app.route('/resetpassword', methods=['PUT','POST'])
 def resetpassword():
     if request.method=='POST':
