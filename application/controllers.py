@@ -264,7 +264,7 @@ def speech(lang):
             prompt="i am talking in"+lang
             )
 
-        if user_id!='null':
+        if user_id!='':
             user_transcription = UserTranscription(user_id=user_id, transcription=transcript.text, language=lang, time=datetime.datetime.now())
             db.session.add(user_transcription)
             db.session.commit()
