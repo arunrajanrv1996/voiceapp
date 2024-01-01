@@ -254,12 +254,14 @@ def speech(lang):
             model="whisper-1", 
             file=audio_file_open, 
             response_format="json",
+            prompt="i am talking in"+lang
             )
         else:
             transcript = client.audio.translations.create(
             model="whisper-1", 
             file=audio_file_open, 
             response_format="json",
+            prompt="i am talking in"+lang
             )
 
         if user_id!='null':
