@@ -67,16 +67,15 @@ def userlogin():
 
 
 @app.route("/userprofile", methods=['POST','PUT','GET'])
-@auth_required('token')
 def userprofile():
     if request.method=='GET':
-        user=User.query.filter_by(id=current_user.id).first()
+        user=User.query.filter_by(id=1).first()
         return jsonify(puser_to_dict(user))
     if request.method=='PUT':
         post_data = request.get_json()
         image = post_data.get('image')
         password = post_data.get('password')
-        user=User.query.filter_by(id=current_user.id).first()
+        user=User.query.filter_by(id=1).first()
         if not user:
             return jsonify({'message': 'No user logged in'})
         if image:
@@ -88,9 +87,8 @@ def userprofile():
         return jsonify({'message': 'User updated successfully!'})
 
 @app.route('/currentuser/')
-@auth_required('token')
 def currentuser():
-    user=User.query.filter_by(id=current_user.id).first()
+    user=User.query.filter_by(id=1).first()
     if not user:
         return jsonify({'message': 'No user logged in'})
     return jsonify(cuser_to_dict(user))
@@ -130,16 +128,14 @@ def registeruser():
 
 
 @app.route('/usertranscript')
-@auth_required('token')
 def usertranscript():
-    user=UserTranscription.query.filter_by(user_id=current_user.id).order_by(UserTranscription.time.desc()).limit(30)
+    user=UserTranscription.query.filter_by(user_id=1).order_by(UserTranscription.time.desc()).limit(30)
     return jsonify([transcript_to_dict(user) for user in user])
 
 
 @app.route('/usertranscriptanalysis')
-@auth_required('token')
 def compute_frequent_words_and_phrases():
-    user_id = current_user.id  
+    user_id = 1 
 
     # Calculate the most frequently used words for the current user
     user_transcriptions = UserTranscription.query.filter_by(user_id=user_id).all()
@@ -158,9 +154,8 @@ def compute_frequent_words_and_phrases():
     return jsonify({'frequent_words_user': frequent_words_user, 'frequent_words_all_users': frequent_words_all_users})
 
 @app.route('/useruniquephrases')
-@auth_required('token')
 def get_user_unique_phrases():
-    user_id = current_user.id  
+    user_id = 1 
 
     # Retrieve all transcriptions for the current user
     user_transcriptions = UserTranscription.query.filter_by(user_id=user_id).all()
@@ -189,9 +184,8 @@ def extract_phrases(text):
 
 
 @app.route('/similarusers')
-@auth_required('token')
 def find_similar_users():
-    current_user_id = current_user.id  
+    current_user_id = 1
 
     # Retrieve transcriptions for the current user
     current_user_transcriptions = UserTranscription.query.filter_by(user_id=current_user_id).all()
@@ -230,8 +224,6 @@ def find_similar_users():
     for i in range(len(most_similar_users)):
         if len(similar_users_info)==5:
             break
-        if most_similar_users[i].username != current_user.username:
-            similar_users_info.append(most_similar_users[i].username)
     similar_users_info=list(set(similar_users_info))
 
     return jsonify({'similar_users': similar_users_info})
