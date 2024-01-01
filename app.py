@@ -3,10 +3,13 @@ from flask import Flask
 from flask_security import Security, SQLAlchemySessionUserDatastore
 from application.models import db, User, Role
 from application.config import LocalDevelopmentConfig
+from sqlalchemy import text
 
 app = None
 
-
+def sync_sequence():
+    with db.engine.connect() as connection:
+        result = connection.execute(text("SELECT setval(pg_get_serial_sequence('table_name', 'column_name'), (SELECT MAX(column_name) FROM table_name)+1);"))
 
 def create_app():
     app = Flask(__name__, template_folder="templates")
@@ -21,6 +24,7 @@ def create_app():
     app.security = Security(app, user_datastore)
     with app.app_context():
         db.create_all()
+        sync_sequence()  # Add this line
         # Check if roles exist before adding them
         if not Role.query.filter_by(name='admin').first():
             r1 = Role(name='admin', description='Administrator')
@@ -33,13 +37,10 @@ def create_app():
         db.session.commit()
     return app
 
-
 app= create_app()
 
 # Import all the controllers so they are loaded
 from application.controllers import *
-
-
 
 if __name__ == "__main__":
     # Run the Flask app
