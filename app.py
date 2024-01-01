@@ -5,7 +5,7 @@ from application.models import db, User, Role
 from application.config import LocalDevelopmentConfig
 
 app = None
-api = None
+
 
 
 def create_app():
@@ -31,10 +31,10 @@ def create_app():
             db.session.add(r2)
 
         db.session.commit()
-    return app, api
+    return app
 
 
-app, api= create_app()
+app= create_app()
 
 # Import all the controllers so they are loaded
 from application.controllers import *
