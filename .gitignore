@@ -1,2 +1,6 @@
 .env
-pychache/
+venv
+__pycache__
+**/__pycache__
+db_directory/
+database.sqlite3

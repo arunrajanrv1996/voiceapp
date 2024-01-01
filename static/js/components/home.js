@@ -214,7 +214,6 @@ const home = Vue.component("home", {
           this.loading = false;
           this.text = data.text;
           this.fetchtranscript();
-          console.log(data);
         });
     },
     handleFileChange(event) {
