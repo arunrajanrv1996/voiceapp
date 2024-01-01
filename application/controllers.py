@@ -67,17 +67,15 @@ def userlogin():
         if check_password_hash(user.password, password):
             app.logger.info("Password validation successful")
             g.user = user
-            return jsonify({"user_id": user.id,"token": user.get_auth_token()})
+            return jsonify({"user_id": user.id})
         else:
             app.logger.warning("Password validation failed")
             return jsonify({"message": "Wrong Password"})
 
 
 # Define the route for user profile
-@app.route("/userprofile/", methods=['POST','PUT','GET'])
-@auth_required('token')
-def userprofile():
-    id=current_user.id
+@app.route("/userprofile/<id>", methods=['POST','PUT','GET'])
+def userprofile(id):
     if request.method=='GET':
         user=User.query.filter_by(id=id).first()
         return jsonify(puser_to_dict(user))

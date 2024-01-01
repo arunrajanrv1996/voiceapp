@@ -24,4 +24,4 @@ class LocalDevelopmentConfig(Config):
     SESSION_COOKIE_SECURE=True
     SECURITY_UNAUTHORIZED_VIEW = None
     WTF_CSRF_ENABLED = False
-    SECURITY_TOKEN_AUTHENTICATION_HEADER = 'Authorization'
+    SECURITY_TOKEN_AUTHENTICATION_HEADER = 'Authentication-Token'
