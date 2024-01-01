@@ -16,7 +16,7 @@ const home = Vue.component("home", {
             <label for="fileInput" class="file-label">Choose an audio file:</label>
             <div class="input-group">
               <input type="file" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" aria-label="Upload" ref="fileInput" @change="handleFileChange" accept="audio/*">
-              <button class="submit-button" type="button" id="inputGroupFileAddon04">Submit Audio</button>
+              <button class="btn btn-outline-secondary" type="submit" id="inputGroupFileAddon04">Submit Audio</button>
             </div>
           </form>
           </div>
