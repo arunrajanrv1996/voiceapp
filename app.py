@@ -3,8 +3,6 @@ from flask import Flask
 from flask_security import Security, SQLAlchemySessionUserDatastore
 from application.models import db, User, Role
 from application.config import LocalDevelopmentConfig
-from flask_restful import Api
-from flask_cors import CORS
 
 app = None
 api = None
@@ -18,9 +16,6 @@ def create_app():
         print("Staring Local Development")
         app.config.from_object(LocalDevelopmentConfig)
     db.init_app(app)
-    app.app_context().push()
-    api = Api(app)
-    CORS(app)
     app.app_context().push()
     user_datastore = SQLAlchemySessionUserDatastore(db.session, User, Role)
     app.security = Security(app, user_datastore)

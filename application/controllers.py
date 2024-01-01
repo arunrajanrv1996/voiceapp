@@ -9,6 +9,9 @@ from sklearn.metrics.pairwise import cosine_similarity
 import datetime
 import spacy
 from collections import Counter
+from openai import OpenAI
+
+client = OpenAI(api_key="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")
 
 nlp = spacy.load("en_core_web_sm")
 
@@ -247,62 +250,22 @@ def speech(lang):
     # Save the audio file to a known location with Ogg extension
     audio_file_path = os.path.join(audio_dir, 'audio.ogg')
     audio_file.save(audio_file_path)
-    try:
-        transcription = transcribe_audio_with_whisper(audio_file_path,lang)
-
-
-        if transcription is not None:
-            # Read the text from the existing JSON file
-            json_file_path = os.path.join(app.root_path, 'audio.json')
-            with open(json_file_path, 'r') as json_file:
-                json_data = json.load(json_file)
-                text_from_json = json_data.get('text', '')
-            if user_id!="null":
-                transcript = UserTranscription(transcription=text_from_json,language=lang,user_id=int(user_id),time=datetime.datetime.now())
-                db.session.add(transcript)
-                db.session.commit()
-                return jsonify({'text': text_from_json})
-            return jsonify({'text': text_from_json})
-        else:
-            return jsonify({'error': 'Error during transcription'}), 500
-    except Exception as e:
-        return jsonify({'error': f'Error: {e}'}), 500
-    finally:
-        # Delete the audio file
-        os.remove(audio_file_path)
-        os.remove("audio.json")
-        os.remove("audio.txt")
-        os.remove("audio.srt")
-        os.remove("audio.vtt")
-        os.remove("audio.tsv")
-
-    
-
-
-
-
-def transcribe_audio_with_whisper(audio_path,lang):
-    # Construct the Whisper command
-    if lang!="English":
-        whisper_command = ["whisper", audio_path,"--language", lang,"--task","translate","--model","tiny"]
+    audio_file_open = open(audio_file_path, "rb")
+    if lang=="English":
+        transcript = client.audio.transcriptions.create(
+        model="whisper-1", 
+        file=audio_file_open, 
+        response_format="json",
+        )
     else:
-        whisper_command = ["whisper", audio_path,"--language", lang,"--model","tiny"]
+        transcript = client.audio.translations.create(
+        model="whisper-1", 
+        file=audio_file_open, 
+        response_format="json",
+        )
+    usertranscript = UserTranscription(transcription=transcript.text,language=lang,user_id=user_id,time=datetime.datetime.now())
+    db.session.add(usertranscript)
+    db.session.commit()
 
-    try:
-        # Execute the Whisper command
-        process = subprocess.Popen(whisper_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        output, error = process.communicate()
 
-        # Check if the process was successful
-        if process.returncode == 0:
-            # Extract the transcription from the output
-            transcription = output.decode('utf-8').strip()
-            return transcription
-        else:
-            # Print the error if the process failed
-            print(f"Error during transcription:\n{error.decode('utf-8')}")
-            return None
-
-    except Exception as e:
-        print(f"Error: {e}")
-        return None
+    return jsonify({'text': transcript.text})
