@@ -13,15 +13,11 @@ const home = Vue.component("home", {
           </button>
           <div class="inputcontainer">
           <form @submit.prevent="submitFile">
-          <div class="input-group">
-            <div class="custom-file">
-              <input type="file" class="custom-file-input" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" @change="handleFileChange" accept="audio/*" ref="fileInput">
-              <label class="custom-file-label" for="inputGroupFile04">Choose an audio file</label>
+            <label for="fileInput" class="file-label">Choose an audio file:</label>
+            <div class="input-group">
+              <input type="file" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" aria-label="Upload" ref="fileInput" @change="handleFileChange" accept="audio/*">
+              <button class="submit-button" type="button" id="inputGroupFileAddon04">Submit Audio</button>
             </div>
-            <div class="input-group-append">
-              <button class="submit-button" type="submit" id="inputGroupFileAddon04">Submit Audio</button>
-            </div>
-          </div>
           </form>
           </div>
           <div class="container">
