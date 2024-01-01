@@ -11,7 +11,7 @@ import spacy
 from collections import Counter
 from openai import OpenAI
 
-client = OpenAI(api_key="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")
+client = OpenAI(api_key="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")
 
 nlp = spacy.load("en_core_web_sm")
 
@@ -263,9 +263,11 @@ def speech(lang):
         file=audio_file_open, 
         response_format="json",
         )
-    usertranscript = UserTranscription(transcription=transcript.text,language=lang,user_id=user_id,time=datetime.datetime.now())
-    db.session.add(usertranscript)
-    db.session.commit()
+
+    if user_id!='null':
+        user_transcription = UserTranscription(user_id=user_id, transcription=transcript.text, language=lang, time=datetime.datetime.now())
+        db.session.add(user_transcription)
+        db.session.commit()
 
 
     return jsonify({'text': transcript.text})
