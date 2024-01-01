@@ -98,25 +98,24 @@ const home = Vue.component("home", {
       text: "your text will appear here...",
       language: "English",
       loading: false,
-      user_id: null,
+      user_id: localStorage.getItem("user_id") || "",
       usertranscript: [],
       notranscript: "No transcript found",
     };
   },
   mounted() {
     this.setUpAudio();
-    if (localStorage.getItem("auth_token")) {
+    if (localStorage.getItem("user_id")) {
       this.fetchtranscript();
       this.fetchcuser();
     }
   },
   methods: {
     fetchtranscript() {
-      fetch("/usertranscript", {
+      fetch("/usertranscript/" + this.user_id, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          "Authentication-Token": localStorage.getItem("auth_token"),
         },
       })
         .then((response) => {
@@ -131,28 +130,6 @@ const home = Vue.component("home", {
         })
         .catch((error) => {
           this.usertranscript = [];
-        });
-    },
-    fetchcuser() {
-      fetch("/currentuser/", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "Authentication-Token": localStorage.getItem("auth_token"),
-        },
-      })
-        .then((response) => {
-          if (response.ok) {
-            return response.json();
-          } else {
-            throw new Error("User not found");
-          }
-        })
-        .then((data) => {
-          this.user_id = data.id;
-        })
-        .catch((error) => {
-          this.user_id = null;
         });
     },
     setUpAudio() {

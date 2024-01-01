@@ -1,4 +1,4 @@
-from flask import current_app as app, render_template, jsonify, request
+from flask import current_app as app, render_template, jsonify, request,g
 import os, json
 import subprocess
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -61,16 +61,17 @@ def userlogin():
 
         if check_password_hash(user.password, password):
             app.logger.info("Password validation successful")
-            return jsonify({"token": user.get_auth_token()})
+            g.user = user
+            return jsonify({"user_id": user.id})
         else:
             app.logger.warning("Password validation failed")
             return jsonify({"message": "Wrong Password"})
 
 
-@app.route("/userprofile", methods=['POST','PUT','GET'])
-def userprofile():
+@app.route("/userprofile/<id>", methods=['POST','PUT','GET'])
+def userprofile(id):
     if request.method=='GET':
-        user=User.query.filter_by(id=1).first()
+        user=User.query.filter_by(id=id).first()
         return jsonify(puser_to_dict(user))
     if request.method=='PUT':
         post_data = request.get_json()
@@ -89,7 +90,7 @@ def userprofile():
 
 @app.route('/currentuser/')
 def currentuser():
-    user=User.query.filter_by(id=1).first()
+    user = getattr(g, 'user', None)
     if not user:
         return jsonify({'message': 'No user logged in'})
     return jsonify(cuser_to_dict(user))
@@ -128,15 +129,15 @@ def registeruser():
     return jsonify({'message': 'User created successfully!'})
 
 
-@app.route('/usertranscript')
-def usertranscript():
-    user=UserTranscription.query.filter_by(user_id=1).order_by(UserTranscription.time.desc()).limit(30)
+@app.route('/usertranscript/<id>')
+def usertranscript(id):
+    user=UserTranscription.query.filter_by(user_id=int(id)).order_by(UserTranscription.time.desc()).limit(30)
     return jsonify([transcript_to_dict(user) for user in user])
 
 
-@app.route('/usertranscriptanalysis')
-def compute_frequent_words_and_phrases():
-    user_id = 1 
+@app.route('/usertranscriptanalysis/<id>')
+def compute_frequent_words_and_phrases(id):
+    user_id = int(id)
 
     # Calculate the most frequently used words for the current user
     user_transcriptions = UserTranscription.query.filter_by(user_id=user_id).all()
@@ -154,9 +155,9 @@ def compute_frequent_words_and_phrases():
 
     return jsonify({'frequent_words_user': frequent_words_user, 'frequent_words_all_users': frequent_words_all_users})
 
-@app.route('/useruniquephrases')
-def get_user_unique_phrases():
-    user_id = 1 
+@app.route('/useruniquephrases/<id>')
+def get_user_unique_phrases(id):
+    user_id = int(id)
 
     # Retrieve all transcriptions for the current user
     user_transcriptions = UserTranscription.query.filter_by(user_id=user_id).all()
@@ -184,9 +185,9 @@ def extract_phrases(text):
 
 
 
-@app.route('/similarusers')
+@app.route('/similarusers/<id>')
 def find_similar_users():
-    current_user_id = 1
+    current_user_id = int(id)
 
     # Retrieve transcriptions for the current user
     current_user_transcriptions = UserTranscription.query.filter_by(user_id=current_user_id).all()
@@ -225,6 +226,9 @@ def find_similar_users():
     for i in range(len(most_similar_users)):
         if len(similar_users_info)==5:
             break
+        if most_similar_users[i].id!=current_user_id:
+            similar_users_info.append(puser_to_dict(most_similar_users[i]))
+
     similar_users_info=list(set(similar_users_info))
 
     return jsonify({'similar_users': similar_users_info})

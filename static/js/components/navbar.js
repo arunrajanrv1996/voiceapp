@@ -8,16 +8,16 @@ const navbar = Vue.component("navbar", {
               <span class="navbar-text">Voice Analyzer</span>
             </router-link>
             <div class="d-flex ms-auto"> <!-- Move to the right -->
-              <router-link class="nav-link" to="/" v-if="token">
+              <router-link class="nav-link" to="/" v-if="user_id">
                 <span class="navbar-text">Home</span>
               </router-link>
-              <router-link class="nav-link" to="/profile" v-if="token">
+              <router-link class="nav-link" to="/profile" v-if="user_id">
                 <span class="navbar-text">Profile</span>
               </router-link>
-              <router-link v-if="!token" class="nav-link" to="/login">
+              <router-link v-if="!user_id" class="nav-link" to="/login">
                 <span class="navbar-text">Login/Register</span>
               </router-link>
-              <button v-if="token" @click="logout" class="btn btn-link nav-link">
+              <button v-if="user_id" @click="logout" class="btn btn-link nav-link">
                 <span class="navbar-text"><i class="fas fa-sign-out-alt"></i>Logout</span>
               </button>
             </div>
@@ -27,7 +27,7 @@ const navbar = Vue.component("navbar", {
     `,
   data() {
     return {
-      token: localStorage.getItem("auth_token"),
+      user_id: localStorage.getItem("user_id") || "",
     };
   },
   methods: {
@@ -37,7 +37,6 @@ const navbar = Vue.component("navbar", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authentication-Token": this.token,
         },
       })
         .then((response) => {
@@ -48,7 +47,7 @@ const navbar = Vue.component("navbar", {
           }
         })
         .then((data) => {
-          localStorage.removeItem("auth_token");
+          localStorage.removeItem("user_id");
           this.token = "";
           this.$router.push("/");
           location.reload();
