@@ -251,23 +251,28 @@ def speech(lang):
     audio_file_path = os.path.join(audio_dir, 'audio.ogg')
     audio_file.save(audio_file_path)
     audio_file_open = open(audio_file_path, "rb")
-    if lang=="English":
-        transcript = client.audio.transcriptions.create(
-        model="whisper-1", 
-        file=audio_file_open, 
-        response_format="json",
-        )
-    else:
-        transcript = client.audio.translations.create(
-        model="whisper-1", 
-        file=audio_file_open, 
-        response_format="json",
-        )
+    try:
+        if lang=="English":
+            transcript = client.audio.transcriptions.create(
+            model="whisper-1", 
+            file=audio_file_open, 
+            response_format="json",
+            )
+        else:
+            transcript = client.audio.translations.create(
+            model="whisper-1", 
+            file=audio_file_open, 
+            response_format="json",
+            )
 
-    if user_id!='null':
-        user_transcription = UserTranscription(user_id=user_id, transcription=transcript.text, language=lang, time=datetime.datetime.now())
-        db.session.add(user_transcription)
-        db.session.commit()
-
-
-    return jsonify({'text': transcript.text})
+        if user_id!='null':
+            user_transcription = UserTranscription(user_id=user_id, transcription=transcript.text, language=lang, time=datetime.datetime.now())
+            db.session.add(user_transcription)
+            db.session.commit()
+        return jsonify({'text': transcript.text})
+    except Exception as e:
+        print(e)
+        return jsonify({'text': 'Error in transcription'})
+    finally:
+        audio_file_open.close()
+        os.remove(audio_file_path)
