@@ -228,7 +228,6 @@ def find_similar_users(id):
             break
         if most_similar_users[i].username != User.query.get(current_user_id).username:
             similar_users_info.append(most_similar_users[i].username)
-        similar_users_info=list(set(similar_users_info))
 
     similar_users_info=list(set(similar_users_info))
 
