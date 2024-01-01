@@ -101,20 +101,22 @@ const home = Vue.component("home", {
       user_id: localStorage.getItem("user_id") || "",
       usertranscript: [],
       notranscript: "No transcript found",
+      token: localStorage.getItem("token") || "",
     };
   },
   mounted() {
     this.setUpAudio();
-    if (localStorage.getItem("user_id")) {
+    if (localStorage.getItem("token")) {
       this.fetchtranscript();
     }
   },
   methods: {
     fetchtranscript() {
-      fetch("/usertranscript/" + this.user_id, {
+      fetch("/usertranscript/", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
+          Authorization: this.token,
         },
       })
         .then((response) => {

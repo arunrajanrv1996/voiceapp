@@ -74,9 +74,10 @@ def userlogin():
 
 
 # Define the route for user profile
-@app.route("/userprofile/<id>", methods=['POST','PUT','GET'])
+@app.route("/userprofile/", methods=['POST','PUT','GET'])
 @auth_required('token')
-def userprofile(id):
+def userprofile():
+    id=current_user.id
     if request.method=='GET':
         user=User.query.filter_by(id=id).first()
         return jsonify(puser_to_dict(user))
