@@ -9,7 +9,7 @@ app = None
 
 def sync_sequence():
     with db.engine.connect() as connection:
-        result = connection.execute(text("SELECT setval(pg_get_serial_sequence('table_name', 'column_name'), (SELECT MAX(column_name) FROM table_name)+1);"))
+        result = connection.execute(text("SELECT setval(pg_get_serial_sequence('role', 'id'), (SELECT MAX(id) FROM role)+1);"))
 
 def create_app():
     app = Flask(__name__, template_folder="templates")
