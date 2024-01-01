@@ -42,8 +42,48 @@ const Login = Vue.component("login", {
       </form>
       <div class="text-center" style="margin-top:20px;">
         <p>Don't have an account? <router-link to="/register">Register</router-link></p>
+        <p>Forgot password? <button style="background: none; border: none; color: #007bff; cursor: pointer; text-decoration: underline;" @click="showreset">Click here</button></p>
       </div>
     </div>
+    <div v-if="isRestModalVisible" class="custom-modal-overlay">
+    <div class="custom-modal">
+      <div class="modal-header">
+        <h5 class="modal-title">Update Profile</h5>
+        <span @click="closeModal" class="close-btn">&times;</span>
+      </div>
+      <div class="modal-body">
+        <form @submit.prevent="resetpassword">
+          <title>Reset Password</title>
+          <label for="email" class="form-label form-lable-update">Email:</label>
+          <input type="email" class="form-control" placeholder="Email" v-model="formData.email" required>
+          <button type="submit" class="submit-button" style="margin-top:10px;">Reset</button>
+          <button type="button" @click="closeRModal" class="cancel-button">Cancel</button>
+        </form>
+      </div>
+    </div>
+  </div>
+    <div v-if="isModalVisible" class="custom-modal-overlay">
+        <div class="custom-modal">
+          <div class="modal-header">
+            <h5 class="modal-title">Update Profile</h5>
+            <span @click="closeModal" class="close-btn">&times;</span>
+          </div>
+          <div class="modal-body">
+            <form @submit.prevent="updateprofilepassword">
+              <title>Update Password</title>
+              <label for="otp" class="form-label form-lable-update">OTP:</label>
+              <input type="text" class="form-control" placeholder="OTP" v-model="userotp" required>
+              <label for="password" class="form-label form-lable-update">Password:</label>
+              <input type="password" class="form-control" @input="validatePassword" placeholder="Password" v-model="formData.password" required>
+              <p class="error" style="color:red;" id="passwordError">{{ passwordError }}</p>
+              <label for="confirm_password" class="form-label form-lable-update">Confirm Password:</label>
+              <input type="password" class="form-control" placeholder="Confirm Password" v-model="formData.confirm_password" required>
+              <button type="submit" class="submit-button" :disabled="passwordError!=''" style="margin-top:10px;">Update</button>
+              <button type="button" @click="closeModal" class="cancel-button">Cancel</button>
+            </form>
+          </div>
+        </div>
+      </div>
   </div>
     <footerr></footerr>
   </div>
@@ -62,10 +102,108 @@ const Login = Vue.component("login", {
       password: "",
       authenticated: false,
       showloginform: true,
+      passwordError: "",
+      userotp: "",
+      otp: "",
+      formData: {
+        email: "",
+        password: "",
+        confirm_password: "",
+      },
+      isModalVisible: false,
+      isRestModalVisible: false,
     };
   },
 
   methods: {
+    resetpassword() {
+      fetch(`/resetpassword`, {
+        method: "POST",
+        body: JSON.stringify(this.formData),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => {
+          if (response.ok) {
+            return response.json();
+          } else {
+            throw new Error("No user found");
+          }
+        })
+        .then((data) => {
+          if (data.message == "No user found!") {
+            alert("No user found");
+            return;
+          } else {
+            this.otp = data.otp;
+            alert("Reset code sent to your email");
+            this.closeRModal();
+            this.isModalVisible = true;
+          }
+        })
+        .catch((error) => {
+          alert("Password reset failed");
+          this.user = {};
+        });
+    },
+    closeRModal() {
+      // Hide the modal when the "Cancel" button is clicked
+      this.isRestModalVisible = false;
+    },
+    closeModal() {
+      // Hide the modal when the "Cancel" button is clicked
+      this.isModalVisible = false;
+    },
+    updateprofilepassword() {
+      if (this.userotp != this.otp) {
+        alert("Invalid OTP");
+        return;
+      }
+      if (this.formData.password != this.formData.confirm_password) {
+        alert("Passwords do not match");
+        return;
+      }
+
+      fetch(`/resetpassword`, {
+        method: "PUT",
+        body: JSON.stringify(this.formData),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => {
+          if (response.ok) {
+            return response.json();
+          } else {
+            throw new Error("No user found");
+          }
+        })
+        .then((data) => {
+          if (data.message == "No user found!") {
+            alert("No user found");
+            return;
+          } else {
+            this.formData.email = "";
+            this.formData.password = "";
+            this.formData.confirm_password = "";
+            this.userotp = "";
+            alert("Password updated successfully");
+            this.closeModal();
+          }
+        })
+        .catch((error) => {
+          alert("Password update failed");
+        });
+    },
+    showreset() {
+      // Show the modal when the "Update" button is clicked
+      this.isRestModalVisible = true;
+    },
+    showUploadForm() {
+      // Show the modal when the "Update" button is clicked
+      this.isModalVisible = true;
+    },
     login() {
       const payload = {
         username: this.username,
@@ -114,6 +252,16 @@ const Login = Vue.component("login", {
           this.msg = "Invalid Username/password";
           console.error(error);
         });
+    },
+    validatePassword() {
+      const password = this.formData.password;
+      // Check if the password has a length of at least 8 characters and contains at least one digit
+      if (password.length < 8 || !/\d/.test(password)) {
+        this.passwordError =
+          "Password must be at least 8 characters long and contain at least one digit.";
+      } else {
+        this.passwordError = "";
+      }
     },
   },
 });

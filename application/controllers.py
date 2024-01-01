@@ -10,7 +10,9 @@ import datetime
 import spacy
 from collections import Counter
 from openai import OpenAI
-
+from application.email import send_email_user
+from jinja2 import Template
+import random
 # Set the OpenAI API key
 api_key = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=api_key) # Initialize the OpenAI client
@@ -48,6 +50,41 @@ def transcript_to_dict(transcript):
         'user_id': transcript.user_id,
         'created_on': transcript.time,
     }
+
+
+@app.route('/resetpassword', methods=['PUT','POST'])
+def resetpassword():
+    if request.method=='POST':
+        post_data = request.get_json()
+        email = post_data.get('email')
+        user = User.query.filter_by(email=email).first()
+        genotp= random.randint(1000,9999) 
+        if not user:
+            return jsonify({'message': 'No user found!'})
+        with open('templates/reset.html') as file_:
+            template = Template(file_.read())
+            message = template.render(otp=genotp)
+
+        send_email_user(
+            to=email,
+            sub="Password Reset",
+            message=message
+        )
+
+        return jsonify({'message': 'Password sent successfully!', 'otp': genotp, 'email': email})
+    
+    if request.method=='PUT':
+        post_data = request.get_json()
+        email = post_data.get('email')
+        user = User.query.filter_by(email=email).first()
+        if not user:
+            return jsonify({'message': 'No user found!'})
+        password = generate_password_hash(post_data.get('password'))
+        user.password=password
+        db.session.commit()
+        return jsonify({'message': 'Password reset successfully!'})
+
+
 
 # Define the route for user login
 @app.route('/userlogin', methods=['POST'])
