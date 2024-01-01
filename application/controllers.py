@@ -186,7 +186,7 @@ def extract_phrases(text):
 
 
 @app.route('/similarusers/<id>')
-def find_similar_users():
+def find_similar_users(id):
     current_user_id = int(id)
 
     # Retrieve transcriptions for the current user
