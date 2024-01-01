@@ -207,7 +207,7 @@ const home = Vue.component("home", {
             return response.json();
           } else {
             this.loading = false;
-            alert("Please select a language");
+            alert("something went wrong, Please try again");
           }
         })
         .then((data) => {
