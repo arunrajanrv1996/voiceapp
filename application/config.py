@@ -8,8 +8,10 @@ class Config():
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 class LocalDevelopmentConfig(Config):
-    connection_string = "Driver={ODBC Driver 18 for SQL Server};Server=tcp:voiceanalyser-server.database.windows.net,1433;Database=voiceanalyzer;Uid=arunrajanrv;Pwd=Kingarun18;Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;"    
-    SQLALCHEMY_DATABASE_URI = "mssql+pyodbc:///?odbc_connect=%s" % connection_string
+    SQLITE_DB_DIR = os.path.join(basedir, "../db_directory")
+    SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(SQLITE_DB_DIR, "database.sqlite3")
+    # connection_string = "Driver={ODBC Driver 18 for SQL Server};Server=tcp:voiceanalyser-server.database.windows.net,1433;Database=voiceanalyzer;Uid=arunrajanrv;Pwd=Kingarun18;Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;"    
+    # SQLALCHEMY_DATABASE_URI = "mssql+pyodbc:///?odbc_connect=%s" % connection_string
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY =  "493a1a0c-792a-44f4-869b-2dd2ddc247f3"
     SECURITY_PASSWORD_HASH = "bcrypt"
