@@ -11,7 +11,7 @@ import spacy
 from collections import Counter
 from openai import OpenAI
 
-client = OpenAI(api_key="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")
+client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
 nlp = spacy.load("en_core_web_sm")
 
@@ -183,7 +183,7 @@ def get_user_unique_phrases():
 def extract_phrases(text):
     # You can customize this function based on your requirements for extracting phrases
     doc = nlp(text)
-    phrases = [chunk.text for chunk in doc.noun_chunks if len(chunk.text.split()) >= 3]
+    phrases = [chunk.text for chunk in doc.noun_chunks if len(chunk.text.split()) >= 2]
     return phrases
 
 
