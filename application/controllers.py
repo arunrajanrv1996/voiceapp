@@ -11,7 +11,7 @@ import spacy
 from collections import Counter
 from openai import OpenAI
 
-client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+client = OpenAI(api_key="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" )
 
 nlp = spacy.load("en_core_web_sm")
 
