@@ -3,18 +3,20 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import ForeignKeyConstraint
 from application.database import db
 
-
+# Define Role model
 class Role(db.Model, RoleMixin):
     id = db.Column(db.Integer(), primary_key=True, autoincrement=True)
     name = db.Column(db.String(80), unique=True)
     description = db.Column(db.String(255))
 
+# Define UserRoles model
 class UserRoles(db.Model):
     __tablename__ = 'userroles'
     id = db.Column(db.Integer(), primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer(), db.ForeignKey('user.id', ondelete='CASCADE'))
     role_id = db.Column(db.Integer(), db.ForeignKey('role.id', ondelete='CASCADE'))
 
+# Define user model
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     username = db.Column(db.String(255), unique=True)
@@ -26,7 +28,7 @@ class User(db.Model, UserMixin):
     roles = db.relationship('Role', secondary='userroles',
                             backref=db.backref('users', lazy='dynamic'))
     
-
+# Define UserTranscription model
 class UserTranscription(db.Model):
     __tablename__ = 'usertranscription'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)

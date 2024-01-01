@@ -7,10 +7,12 @@ from sqlalchemy import text
 
 app = None
 
+#function for syncing the sequence
 def sync_sequence():
     with db.engine.connect() as connection:
         result = connection.execute(text("SELECT setval(pg_get_serial_sequence('role', 'id'), (SELECT MAX(id) FROM role)+1);"))
 
+#function for creating the app
 def create_app():
     app = Flask(__name__, template_folder="templates")
     if os.getenv("ENV", "development") == "production":

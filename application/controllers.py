@@ -11,16 +11,18 @@ import spacy
 from collections import Counter
 from openai import OpenAI
 
+# Set the OpenAI API key
 api_key = os.getenv("OPENAI_API_KEY")
-client = OpenAI(api_key=api_key)
+client = OpenAI(api_key=api_key) # Initialize the OpenAI client
+nlp = spacy.load("en_core_web_sm") # Load the spaCy model
 
-nlp = spacy.load("en_core_web_sm")
 
+# Define the home page route
 @app.route('/')
 def index():
     return render_template('index.html')
 
-
+# Define the dictionary of user information
 def cuser_to_dict(user):
     return {
         'id': user.id,
@@ -28,6 +30,7 @@ def cuser_to_dict(user):
         'email': user.email,
     }
 
+# Define the dictionary of user information
 def puser_to_dict(user):
     return {
         'id': user.id,
@@ -36,6 +39,7 @@ def puser_to_dict(user):
         'image': user.image,
     }
 
+# Define the dictionary of usertranscription information
 def transcript_to_dict(transcript):
     return {
         'id': transcript.id,
@@ -45,6 +49,7 @@ def transcript_to_dict(transcript):
         'created_on': transcript.time,
     }
 
+# Define the route for user login
 @app.route('/userlogin', methods=['POST'])
 def userlogin():
     post_data = request.get_json()
@@ -68,6 +73,7 @@ def userlogin():
             return jsonify({"message": "Wrong Password"})
 
 
+# Define the route for user profile
 @app.route("/userprofile/<id>", methods=['POST','PUT','GET'])
 def userprofile(id):
     if request.method=='GET':
@@ -88,6 +94,7 @@ def userprofile(id):
             db.session.commit()
         return jsonify({'message': 'User updated successfully!'})
 
+# Define the route for currentuser
 @app.route('/currentuser/')
 def currentuser():
     user = getattr(g, 'user', None)
@@ -95,11 +102,15 @@ def currentuser():
         return jsonify({'message': 'No user logged in'})
     return jsonify(cuser_to_dict(user))
 
+
+# Define the route for user creation and listing
 @app.route('/createuser/')
 def createuser():
     user=User.query.all()
-    return jsonify([cuser_to_dict(user) for user in user]) 
+    return jsonify([cuser_to_dict(user) for user in user])
 
+
+# Define the route for user creation
 @app.route('/registeruser/', methods=['POST'])
 def registeruser():
     post_data = request.get_json()
@@ -128,13 +139,13 @@ def registeruser():
 
     return jsonify({'message': 'User created successfully!'})
 
-
+# Define the route for usertanscription
 @app.route('/usertranscript/<id>')
 def usertranscript(id):
     user=UserTranscription.query.filter_by(user_id=int(id)).order_by(UserTranscription.time.desc()).limit(30)
     return jsonify([transcript_to_dict(user) for user in user])
 
-
+# Define the route for usertanscriptionanalysis
 @app.route('/usertranscriptanalysis/<id>')
 def compute_frequent_words_and_phrases(id):
     user_id = int(id)
@@ -155,6 +166,7 @@ def compute_frequent_words_and_phrases(id):
 
     return jsonify({'frequent_words_user': frequent_words_user, 'frequent_words_all_users': frequent_words_all_users})
 
+# Define the route for useruniquephrases
 @app.route('/useruniquephrases/<id>')
 def get_user_unique_phrases(id):
     user_id = int(id)
@@ -184,7 +196,7 @@ def extract_phrases(text):
     return phrases
 
 
-
+# Define the route for similarusers
 @app.route('/similarusers/<id>')
 def find_similar_users(id):
     current_user_id = int(id)
@@ -234,7 +246,7 @@ def find_similar_users(id):
     return jsonify({'similar_users': similar_users_info})
 
 
-
+# Define the route for speech to text conversion
 @app.route('/speech/<lang>', methods=['POST'])
 def speech(lang):
     user_id = request.form.get('user_id')
