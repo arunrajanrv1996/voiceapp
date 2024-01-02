@@ -57,6 +57,7 @@ const home = Vue.component("home", {
                         <div class="dot"></div>  
                 </span>
                 </div>
+                <a @click="download(transcript.text)"><i class="bi bi-arrow-bar-down"></i>Download</a>
           </div>
         </div>
         <div class="container">
@@ -70,7 +71,7 @@ const home = Vue.component("home", {
           >
             <p>{{ transcript.text }}</p>
             <p style="font-size: 12px; color: #666; margin-top: 10px;">
-            {{ transcript.language }} | {{ transcript.created_on }}
+            {{ transcript.language }} | {{ transcript.created_on }} | <a @click="download(transcript.text)"><i class="bi bi-arrow-bar-down"></i>Download</a>
             </p>
           </div>
           <div
@@ -112,6 +113,18 @@ const home = Vue.component("home", {
     }
   },
   methods: {
+    download(text) {
+      var element = document.createElement("a");
+      element.setAttribute(
+        "href",
+        "data:text/plain;charset=utf-8," + encodeURIComponent(text)
+      );
+      element.setAttribute("download", "transcript.txt");
+      element.style.display = "none";
+      document.body.appendChild(element);
+      element.click();
+      document.body.removeChild(element);
+    },
     fetchtranscript() {
       fetch("/usertranscript/" + this.user_id, {
         method: "GET",
