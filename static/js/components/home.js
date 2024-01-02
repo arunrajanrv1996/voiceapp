@@ -17,7 +17,7 @@ const home = Vue.component("home", {
             <label for="fileInput" class="file-label">Choose an audio file:</label>
             <div class="input-group">
               <input type="file" :disabled="filedisable" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" aria-label="Upload" ref="fileInput" @change="handleFileChange" accept="audio/*">
-              <button class="submit-button1" type="submit" id="inputGroupFileAddon04">Submit Audio</button>
+              <button class="submit-button1" :disabled="filedisable" type="submit" id="inputGroupFileAddon04">Submit Audio</button>
             </div>
           </form>
           </div>
@@ -228,7 +228,11 @@ const home = Vue.component("home", {
       if (fileInput.files.length > 0) {
         const audioFile = fileInput.files[0];
         this.audio = audioFile;
+        this.micdisable = true;
+        this.filedisable = true;
+        this.starttext = "Wait for a moment...";
         this.convertToText();
+        this.$refs.fileInput.value = "";
       } else {
         alert("Something went wrong, Please select an audio file");
       }
