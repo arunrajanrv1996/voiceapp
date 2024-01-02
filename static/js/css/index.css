@@ -202,8 +202,8 @@ footer{
 
 
 .transcript-window {
-    height: 500px;
-    max-height: 500px; /* Adjust the maximum height as needed */
+    height: 560px;
+    max-height: 560px; /* Adjust the maximum height as needed */
     overflow-y: auto;
     border: 1px solid #ccc;
     padding: 10px;
