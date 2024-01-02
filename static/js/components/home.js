@@ -22,7 +22,6 @@ const home = Vue.component("home", {
           </div>
           <div class="container">
           <select class="form-select" aria-label="Default select example" v-model="language" title="select the audio/recording language">
-            <option selected>Choose a language</option>
             <option value="English">English</option>
             <option value="Tamil">Tamil</option>
             <option value="German">German</option>
@@ -57,7 +56,9 @@ const home = Vue.component("home", {
                         <div class="dot"></div>  
                 </span>
                 </div>
-                <a @click="download(transcript.text)"><i class="bi bi-arrow-bar-down"></i>Download</a>
+                <button @click="download(text)" v-if="text !== 'your text will appear here...'" class="download-button">
+                  <i class="bi bi-download"></i>Download
+                </button>
           </div>
         </div>
         <div class="container">
@@ -71,7 +72,7 @@ const home = Vue.component("home", {
           >
             <p>{{ transcript.text }}</p>
             <p style="font-size: 12px; color: #666; margin-top: 10px;">
-            {{ transcript.language }} | {{ transcript.created_on }} | <a @click="download(transcript.text)"><i class="bi bi-arrow-bar-down"></i>Download</a>
+            {{ transcript.language }} | {{ transcript.created_on }} | <button @click="download(transcript.text)" class="download-button"><i class="bi bi-download"></i>Download</button>
             </p>
           </div>
           <div

@@ -259,7 +259,15 @@ footer{
     cursor: pointer;
     transition: background-color 0.3s;
   }
-  
+  .download-button {
+    background: none;
+    border: none;
+    color: #949faa; /* Link color */
+    cursor: pointer;
+    padding: 0;
+    font-size: inherit;
+    text-decoration: none;
+  }
   .submit-button1 {
     background-color: #acd8f7;
     padding: 7px 15px;
