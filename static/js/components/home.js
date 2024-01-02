@@ -16,7 +16,7 @@ const home = Vue.component("home", {
           <form @submit.prevent="submitFile">
             <label for="fileInput" class="file-label">Choose an audio file:</label>
             <div class="input-group">
-              <input type="file" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" aria-label="Upload" ref="fileInput" @change="handleFileChange" accept="audio/*">
+              <input type="file" :disabled="filedisable" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" aria-label="Upload" ref="fileInput" @change="handleFileChange" accept="audio/*">
               <button class="submit-button1" type="submit" id="inputGroupFileAddon04">Submit Audio</button>
             </div>
           </form>
@@ -102,6 +102,7 @@ const home = Vue.component("home", {
       audioChunks: [],
       starttext: "Click on the mic to start recording",
       micdisable: false,
+      filedisable: false,
       text: "your text will appear here...",
       language: "English",
       loading: false,
@@ -181,6 +182,7 @@ const home = Vue.component("home", {
       this.isRecording = !this.isRecording;
       if (this.isRecording) {
         this.recorder.start();
+        this.filedisable = true;
         this.starttext = "Recording... click on the mic to stop recording";
         this.$refs.micBtn.classList.add("is-recording");
       } else {
@@ -212,6 +214,7 @@ const home = Vue.component("home", {
           this.loading = false;
           this.text = data.text;
           this.micdisable = false;
+          this.filedisable = false;
           this.starttext = "Click on the mic to start recording";
           this.fetchtranscript();
           console.log(data);
