@@ -57,7 +57,7 @@ const home = Vue.component("home", {
                         <div class="dot"></div>  
                 </span>
                 </div>
-                <button @click="download(text)" v-if="text !== 'your text will appear here...'" class="download-button">
+                <button @click="download(text)" v-if="showdownload" class="download-button">
                   <i class="bi bi-download"></i>Download
                 </button>
           </div>
@@ -109,6 +109,7 @@ const home = Vue.component("home", {
       user_id: localStorage.getItem("user_id") || "",
       usertranscript: [],
       notranscript: "No transcript found",
+      showdownload: false,
     };
   },
   mounted() {
@@ -198,6 +199,7 @@ const home = Vue.component("home", {
       formData.append("user_id", this.user_id);
       this.text = "";
       this.loading = true;
+      this.showdownload = false;
       fetch("/speech/" + this.language, {
         method: "POST",
         body: formData,
@@ -215,6 +217,7 @@ const home = Vue.component("home", {
           this.text = data.text;
           this.micdisable = false;
           this.filedisable = false;
+          this.showdownload = true;
           this.starttext = "Click on the mic to start recording";
           this.fetchtranscript();
           console.log(data);
