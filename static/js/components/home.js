@@ -8,8 +8,8 @@ const home = Vue.component("home", {
         <div class="contain">
         <div class="container">
           <main>
-          <h5 style="margin-bottom:30px;">Click on the Mic to start Recording</h5>
-          <button class="mic-toggle" @click="toggleMic" ref="micBtn" style="border:none;" title="Click here to start recording">
+          <h5 style="margin-bottom:30px;">{{starttext}}</h5>
+          <button class="mic-toggle" :disabled="micdisable"  @click="toggleMic" ref="micBtn" style="border:none;" title="Click here to start recording">
             <img src="/static/js/images/record.png" width="120" height="120">
           </button>
           <div class="inputcontainer">
@@ -100,6 +100,8 @@ const home = Vue.component("home", {
       isRecording: false,
       recorder: null,
       audioChunks: [],
+      starttext: "Click on the mic to start recording",
+      micdisable: false,
       text: "your text will appear here...",
       language: "English",
       loading: false,
@@ -179,9 +181,12 @@ const home = Vue.component("home", {
       this.isRecording = !this.isRecording;
       if (this.isRecording) {
         this.recorder.start();
+        this.starttext = "Recording... click on the mic to stop recording";
         this.$refs.micBtn.classList.add("is-recording");
       } else {
         this.recorder.stop();
+        this.micdisable = true;
+        this.starttext = "Wait for a moment...";
         this.$refs.micBtn.classList.remove("is-recording");
       }
     },
@@ -206,6 +211,8 @@ const home = Vue.component("home", {
         .then((data) => {
           this.loading = false;
           this.text = data.text;
+          this.micdisable = false;
+          this.starttext = "Click on the mic to start recording";
           this.fetchtranscript();
           console.log(data);
         });
