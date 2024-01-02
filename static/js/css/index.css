@@ -260,11 +260,22 @@ footer{
     transition: background-color 0.3s;
   }
   
-.btn-outline-secondary{
-  background-color: #acd8f7;
-}
+  .submit-button1 {
+    background-color: #acd8f7;
+    padding: 7px 15px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
 
-  .submit-button:hover, .btn-outline-secondary:hover {
+  .submit-button1:hover {
+    color: #fff;
+    background-color: #45a049;
+  }
+
+  .submit-button:hover {
     color: #fff;
     background-color: #45a049;
   }
