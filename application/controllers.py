@@ -318,7 +318,7 @@ def speech(lang):
     audio_file_open = open(audio_file_path, "rb")
     try:
         if lang=="English":
-            transcript = client.audio.transcriptions.create(
+            transcript = client.audio.translations.create(
             model="whisper-1", 
             file=audio_file_open, 
             response_format="json",
