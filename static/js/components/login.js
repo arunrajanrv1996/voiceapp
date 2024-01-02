@@ -49,7 +49,7 @@ const Login = Vue.component("login", {
     <div class="custom-modal">
       <div class="modal-header">
         <h5 class="modal-title">Update Profile</h5>
-        <span @click="closeModal" class="close-btn">&times;</span>
+        <span @click="closeRModal" class="close-btn">&times;</span>
       </div>
       <div class="modal-body">
         <form @submit.prevent="resetpassword">
