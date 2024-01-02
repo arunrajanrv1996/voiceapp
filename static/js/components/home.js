@@ -8,7 +8,7 @@ const home = Vue.component("home", {
         <div class="contain">
         <div class="container">
           <main>
-          <h5 style= "margin-bottom:30px;">{{starttext}}</h5>
+          <h5 style="margin-bottom:30px;">Click on the Mic to start Recording</h5>
           <button class="mic-toggle" @click="toggleMic" ref="micBtn" style="border:none;" title="Click here to start recording">
             <img src="/static/js/images/record.png" width="120" height="120">
           </button>
@@ -96,8 +96,7 @@ const home = Vue.component("home", {
   data() {
     return {
       audio: null,
-      starttext: "Click on the mic to start recording",
-      canRecord: true,
+      canRecord: false,
       isRecording: false,
       recorder: null,
       audioChunks: [],
@@ -155,12 +154,10 @@ const home = Vue.component("home", {
         navigator.mediaDevices
           .getUserMedia({ audio: true })
           .then((stream) => {
-            this.starttext = "Click on the mic to stop recording";
             this.recorder = new MediaRecorder(stream);
             this.recorder.ondataavailable = (e) => {
               this.audioChunks.push(e.data);
               if (this.recorder.state === "inactive") {
-                this.starttext = "Click on the mic to start recording";
                 let blob = new Blob(this.audioChunks, { type: "audio/ogg" });
                 this.audio = blob;
                 this.convertToText();

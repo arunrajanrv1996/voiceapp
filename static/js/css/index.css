@@ -227,8 +227,8 @@ footer{
   }
 
   .text-window {
-    height: 155px;
-    max-height: 155px; /* Adjust the maximum height as needed */
+    height: 160px;
+    max-height: 160px; /* Adjust the maximum height as needed */
     overflow-y: auto;
     border: 1px solid #ccc;
     padding: 10px;
