@@ -8,6 +8,7 @@ const home = Vue.component("home", {
         <div class="contain">
         <div class="container">
           <main>
+          <h3 style="margin-top:20px;">Click the Mic to start Recording</h3>
           <button class="mic-toggle" @click="toggleMic" ref="micBtn" style="border:none;" title="Click here to start recording">
             <img src="/static/js/images/record.png" width="120" height="120">
           </button>
