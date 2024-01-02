@@ -5,20 +5,20 @@ const navbar = Vue.component("navbar", {
           <div class="container-fluid">
             <router-link class="navbar-brand" to="/">
               <img src="/static/js/images/record.png" alt="Avatar Logo" style="width:40px;" class="rounded-pill"> 
-              <span class="navbar-text">Voice Analyzer</span>
+              <span class="navbar-text"><strong>Voice Analyzer</strong></span>
             </router-link>
             <div class="d-flex ms-auto"> <!-- Move to the right -->
-              <router-link class="nav-link" to="/" v-if="user_id">
-                <span class="navbar-text">Home</span>
+              <router-link class="nav-link active" to="/" v-if="user_id">
+                <span class="navbar-text"><strong>Home</strong></span>
               </router-link>
-              <router-link class="nav-link" to="/profile" v-if="user_id">
-                <span class="navbar-text">Profile</span>
+              <router-link class="nav-link active" to="/profile" v-if="user_id">
+                <span class="navbar-text"><strong>Profile</strong></span>
               </router-link>
-              <router-link v-if="!user_id" class="nav-link" to="/login">
-                <span class="navbar-text">Login/Register</span>
+              <router-link v-if="!user_id" class="nav-link active" to="/login">
+                <span class="navbar-text"><strong>Login/Register</strong></span>
               </router-link>
-              <button v-if="user_id" @click="logout" class="btn btn-link nav-link">
-                <span class="navbar-text"><i class="fas fa-sign-out-alt"></i>Logout</span>
+              <button v-if="user_id" @click="logout" class="btn btn-link nav-link active">
+                <span class="navbar-text"><i class="fas fa-sign-out-alt"></i><strong>Logout</strong></span>
               </button>
             </div>
           </div>
