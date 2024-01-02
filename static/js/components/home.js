@@ -61,7 +61,7 @@ const home = Vue.component("home", {
                 </button>
           </div>
         </div>
-        <div class="container">
+        <div class="container" v-if="showprevious">
         <h2 style="margin-top:20px;">Previous Transcripts</h2>
         <div class="transcript-window">
         <div class="transcript-container">
@@ -105,6 +105,7 @@ const home = Vue.component("home", {
       user_id: localStorage.getItem("user_id") || "",
       usertranscript: [],
       notranscript: "No transcript found",
+      showprevious: false,
     };
   },
   mounted() {
@@ -114,6 +115,13 @@ const home = Vue.component("home", {
     }
   },
   methods: {
+    lengthoftranscript() {
+      if (this.usertranscript.length === 0) {
+        showprevious = false;
+      } else {
+        showprevious = true;
+      }
+    },
     download(text) {
       var element = document.createElement("a");
       element.setAttribute(
