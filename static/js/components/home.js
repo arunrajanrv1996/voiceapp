@@ -209,6 +209,11 @@ const home = Vue.component("home", {
             return response.json();
           } else {
             this.loading = false;
+            this.micdisable = false;
+            this.filedisable = false;
+            this.showdownload = false;
+            this.starttext = "Click on the mic to start recording";
+            this.text = "something went wrong, Please try again";
             alert("something went wrong, Please try again");
           }
         })
