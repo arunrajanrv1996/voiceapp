@@ -5,6 +5,7 @@ const home = Vue.component("home", {
   template: `
     <div>
         <navbar></navbar>
+        <div class="container">
         <div class="contain">
         <div class="container">
           <main>
@@ -82,6 +83,7 @@ const home = Vue.component("home", {
           >
             <p>{{ notranscript }}, If you are a not new user, Please login to see your Previous Transcripts!</p>
           </div>
+        </div>
         </div>
         </div>
         </div>

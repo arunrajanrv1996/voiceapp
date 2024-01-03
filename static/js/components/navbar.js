@@ -2,7 +2,7 @@ const navbar = Vue.component("navbar", {
   template: `
       <div>
         <nav class="navbar navbar-light" style="background-color: #e3f2fd;">
-          <div class="container-fluid">
+          <div class="container">
             <router-link class="navbar-brand" to="/">
               <img src="/static/js/images/record.png" alt="Avatar Logo" style="width:40px;" class="rounded-pill"> 
               <span class="navbar-text"><strong>Voice Analyzer</strong></span>
