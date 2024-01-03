@@ -57,8 +57,8 @@ const home = Vue.component("home", {
                         <div class="dot"></div>  
                 </span>
                 </div>
-                <button @click="download(text)" v-if="showdownload" class="download-button">
-                  <i class="bi bi-download"></i>Download
+                <button @click="download(text)" v-if="showdownload" class="download-button" style="float:right;">
+                  <i class="bi bi-download"></i> Download
                 </button>
           </div>
         </div>
@@ -73,7 +73,7 @@ const home = Vue.component("home", {
           >
             <p>{{ transcript.text }}</p>
             <p style="font-size: 12px; color: #666; margin-top: 10px;">
-            {{ transcript.language }} | {{ transcript.created_on }} | <button @click="download(transcript.text)" class="download-button"><i class="bi bi-download"></i>Download</button>
+            {{ transcript.language }} | {{ transcript.created_on }} | <button @click="download(transcript.text)" class="download-button"><i class="bi bi-download"></i> Download</button>
             </p>
           </div>
           <div
