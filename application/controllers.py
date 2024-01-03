@@ -315,6 +315,13 @@ def speech(lang):
     # Save the audio file to a known location with Ogg extension
     audio_file_path = os.path.join(audio_dir, 'audio.ogg')
     audio_file.save(audio_file_path)
+    audio_file_size_bytes = os.path.getsize(audio_file_path)
+    
+    # Convert the file size to MB
+    audio_file_size_mb = audio_file_size_bytes / (1024 * 1024)
+    # Check if the file size is larger than 25 MB
+    if audio_file_size_mb > 25:
+        return jsonify({'text': 'File size cannot exceed 25 MB, please try again with a smaller file'})
     audio_file_open = open(audio_file_path, "rb")
     try:
         if lang=="English":
