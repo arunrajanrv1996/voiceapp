@@ -73,7 +73,7 @@ const Login = Vue.component("login", {
               <title>Update Password</title>
               <label for="otp" class="form-label form-lable-update">Verification code:</label>
               <input type="text" class="form-control" placeholder="Verification code" v-model="userotp" required>
-              <label for="password" class="form-label form-lable-update">Password:</label>
+              <label for="password" class="form-label form-lable-update">New Password:</label>
               <input type="password" class="form-control" @input="validatePassword" placeholder="Password" v-model="formData.password" required>
               <p class="error" style="color:red;" id="passwordError">{{ passwordError }}</p>
               <label for="confirm_password" class="form-label form-lable-update">Confirm Password:</label>

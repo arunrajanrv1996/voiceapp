@@ -34,7 +34,7 @@ const Profile = Vue.component("profile", {
                       </div>
                     </form>
                     <form @submit.prevent="updateprofilepassword">
-                      <label for="password" class="form-label form-lable-update">Password:</label>
+                      <label for="password" class="form-label form-lable-update">New Password:</label>
                       <input type="password" class="form-control" @input="validatePassword" placeholder="Password" v-model="formData.password" required>
                       <p class="error" style="color:red;" id="passwordError">{{ passwordError }}</p>
                       <label for="confirm_password" class="form-label form-lable-update">Confirm Password:</label>
