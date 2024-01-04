@@ -64,7 +64,7 @@ const home = Vue.component("home", {
           </div>
         </div>
         <div class="container">
-        <h2 style="margin-top:20px;">History</h2>
+        <h2 style="margin-top:20px;">Transcriptions History</h2>
         <div class="transcript-window">
         <div class="transcript-container">
           <div
