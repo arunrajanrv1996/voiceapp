@@ -65,7 +65,7 @@ const Login = Vue.component("login", {
     <div v-if="isModalVisible" class="custom-modal-overlay">
         <div class="custom-modal">
           <div class="modal-header">
-            <h5 class="modal-title">Update Profile</h5>
+            <h5 class="modal-title">Update Password</h5>
             <span @click="closeModal" class="close-btn">&times;</span>
           </div>
           <div class="modal-body">
