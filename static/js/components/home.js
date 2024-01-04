@@ -64,7 +64,7 @@ const home = Vue.component("home", {
           </div>
         </div>
         <div class="container">
-        <h2 style="margin-top:20px;">Previous Transcripts</h2>
+        <h2 style="margin-top:20px;">History</h2>
         <div class="transcript-window">
         <div class="transcript-container">
           <div
@@ -81,7 +81,7 @@ const home = Vue.component("home", {
             v-if="usertranscript.length === 0"
             class="transcript-card empty"
           >
-            <p>{{ notranscript }}, If you are a not new user, Please login to see your Previous Transcripts!</p>
+            <p>{{ notranscript }}, If you are a not new user, Please login to see your History!</p>
           </div>
         </div>
         </div>
