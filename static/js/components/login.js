@@ -71,8 +71,8 @@ const Login = Vue.component("login", {
           <div class="modal-body">
             <form @submit.prevent="updateprofilepassword">
               <title>Update Password</title>
-              <label for="otp" class="form-label form-lable-update">OTP:</label>
-              <input type="text" class="form-control" placeholder="OTP" v-model="userotp" required>
+              <label for="otp" class="form-label form-lable-update">Verification code:</label>
+              <input type="text" class="form-control" placeholder="Verification code" v-model="userotp" required>
               <label for="password" class="form-label form-lable-update">Password:</label>
               <input type="password" class="form-control" @input="validatePassword" placeholder="Password" v-model="formData.password" required>
               <p class="error" style="color:red;" id="passwordError">{{ passwordError }}</p>
@@ -157,7 +157,7 @@ const Login = Vue.component("login", {
     },
     updateprofilepassword() {
       if (this.userotp != this.otp) {
-        alert("Invalid OTP");
+        alert("Invalid Verification code");
         return;
       }
       if (this.formData.password != this.formData.confirm_password) {

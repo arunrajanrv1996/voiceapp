@@ -77,7 +77,7 @@ def resetpassword():
         post_data = request.get_json()
         email = post_data.get('email')
         user = User.query.filter_by(email=email).first()
-        genotp= random.randint(1000,9999) 
+        genotp= random.randint(100000,999999) 
         if not user:
             return jsonify({'message': 'No user found!'})
         with open('templates/reset.html') as file_:
