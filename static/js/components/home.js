@@ -118,6 +118,7 @@ const home = Vue.component("home", {
     this.setUpAudio();
     if (localStorage.getItem("token")) {
       this.fetchtranscript();
+      this.currentUser();
     }
   },
   methods: {
