@@ -149,7 +149,7 @@ const Profile = Vue.component("profile", {
         .then((response) => {
           if (response.ok) {
             alert("Account deleted successfully");
-            localStorage.removeItem("user_id");
+            localStorage.removeItem("token");
             this.$router.push("/");
             location.reload();
           } else {
