@@ -27,7 +27,7 @@ const navbar = Vue.component("navbar", {
     `,
   data() {
     return {
-      user_id: localStorage.getItem("user_id") || "",
+      user_id: localStorage.getItem("token") || "",
     };
   },
   methods: {
