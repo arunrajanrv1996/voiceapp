@@ -54,8 +54,10 @@ def transcript_to_dict(transcript):
 
 
 # Define the route for user deletion
-@app.route('/deleteuser/<id>', methods=['DELETE'])
-def deleteuser(id):
+@app.route('/deleteuser/', methods=['DELETE'])
+@jwt_required()
+def deleteuser():
+    id = get_jwt_identity()
     user=User.query.filter_by(id=id).first()
     if not user:
         return jsonify({'message': 'No user found!'})

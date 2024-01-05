@@ -139,10 +139,12 @@ const Profile = Vue.component("profile", {
       if (!confirm("Are you sure you want to delete your account?")) {
         return;
       }
-      fetch(`/deleteuser/${this.user_id}`, {
+      const token = localStorage.getItem("token");
+      fetch(`/deleteuser/`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
       })
         .then((response) => {
@@ -161,7 +163,7 @@ const Profile = Vue.component("profile", {
     },
     fetchSimilarUsers() {
       const token = localStorage.getItem("token");
-      fetch(`/similarusers/${this.user_id}`, {
+      fetch(`/similarusers/`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -184,7 +186,7 @@ const Profile = Vue.component("profile", {
     },
     fetchUniquePhrases() {
       const token = localStorage.getItem("token");
-      fetch(`/useruniquephrases/${this.user_id}`, {
+      fetch(`/useruniquephrases/`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -207,7 +209,7 @@ const Profile = Vue.component("profile", {
     },
     fetchTranscripts() {
       const token = localStorage.getItem("token");
-      fetch(`/usertranscriptanalysis/${this.user_id}`, {
+      fetch(`/usertranscriptanalysis/`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
