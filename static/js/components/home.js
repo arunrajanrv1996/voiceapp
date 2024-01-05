@@ -245,6 +245,11 @@ const home = Vue.component("home", {
       const fileInput = this.$refs.fileInput;
       if (fileInput.files.length > 0) {
         const audioFile = fileInput.files[0];
+        const maxSizeInBytes = 5 * 1024 * 1024; // 5MB in bytes
+        if (audioFile.size > maxSizeInBytes) {
+          alert("File size exceeds 5MB. Please select a smaller audio file.");
+          return;
+        }
         this.audio = audioFile;
         this.micdisable = true;
         this.filedisable = true;
