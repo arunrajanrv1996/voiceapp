@@ -321,7 +321,7 @@ def speech(lang):
     audio_file_size_mb = audio_file_size_bytes / (1024 * 1024)
     # Check if the file size is larger than 25 MB
     if audio_file_size_mb > 5:
-        return jsonify({'text': 'File size cannot exceed 5 MB, please try again with a smaller file'})
+        return jsonify({'text': 'File size is larger than 5 MB'})
     audio_file_open = open(audio_file_path, "rb")
     try:
         if lang=="English":

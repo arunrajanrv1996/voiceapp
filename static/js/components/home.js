@@ -221,13 +221,21 @@ const home = Vue.component("home", {
         })
         .then((data) => {
           this.loading = false;
-          this.text = data.text;
-          this.micdisable = false;
-          this.filedisable = false;
-          this.showdownload = true;
-          this.starttext = "Click on the mic to start recording";
-          this.fetchtranscript();
-          console.log(data);
+          if (data.text == "File size is larger than 5 MB") {
+            this.micdisable = false;
+            this.filedisable = false;
+            this.showdownload = false;
+            this.starttext = "Click on the mic to start recording";
+            this.text = data.text;
+            alert(data.text);
+          } else {
+            this.micdisable = false;
+            this.filedisable = false;
+            this.showdownload = true;
+            this.starttext = "Click on the mic to start recording";
+            this.text = data.text;
+            this.fetchtranscript();
+          }
         });
     },
     handleFileChange(event) {
@@ -244,7 +252,7 @@ const home = Vue.component("home", {
         this.convertToText();
         this.$refs.fileInput.value = "";
       } else {
-        alert("Something went wrong, Please select an audio file");
+        alert("Please select an audio file");
       }
     },
   },
