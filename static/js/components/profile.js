@@ -131,7 +131,6 @@ const Profile = Vue.component("profile", {
         confirm_password: "",
       },
       passwordError: "",
-      user_id: localStorage.getItem("user_id") || "",
     };
   },
   methods: {
