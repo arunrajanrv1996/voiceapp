@@ -117,7 +117,7 @@ def userlogin():
 
     with app.app_context():
         user_datastore = app.security.datastore
-        user = user_datastore.find_user(username=username)
+        user = User.query.filter_by(username=username).first()
 
         if not user:
             app.logger.info(f"No user found for username: {username}")
@@ -209,8 +209,8 @@ def usertranscript():
     return jsonify([transcript_to_dict(user) for user in user])
 
 # Define the route for usertanscriptionanalysis
-@app.route('/usertranscriptanalysis/')
 @jwt_required()
+@app.route('/usertranscriptanalysis/')
 def compute_frequent_words_and_phrases():
     user_id = get_jwt_identity()
 
@@ -262,8 +262,8 @@ def extract_phrases(text):
 
 
 # Define the route for similarusers
-@app.route('/similarusers/')
 @jwt_required()
+@app.route('/similarusers/')
 def find_similar_users():
     current_user_id = get_jwt_identity()
 
