@@ -209,8 +209,8 @@ def usertranscript():
     return jsonify([transcript_to_dict(user) for user in user])
 
 # Define the route for usertanscriptionanalysis
-@jwt_required()
 @app.route('/usertranscriptanalysis/')
+@jwt_required()
 def compute_frequent_words_and_phrases():
     user_id = get_jwt_identity()
 
@@ -262,8 +262,9 @@ def extract_phrases(text):
 
 
 # Define the route for similarusers
-@jwt_required()
+
 @app.route('/similarusers/')
+@jwt_required()
 def find_similar_users():
     current_user_id = get_jwt_identity()
 
