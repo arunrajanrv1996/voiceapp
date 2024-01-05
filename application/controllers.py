@@ -126,6 +126,7 @@ def userlogin():
         if check_password_hash(user.password, password):
             app.logger.info("Password validation successful")
             access_token = create_access_token(identity=user.id)
+            print(access_token)
             return jsonify({"token": access_token})
         else:
             app.logger.warning("Password validation failed")
