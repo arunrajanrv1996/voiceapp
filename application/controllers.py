@@ -13,6 +13,7 @@ from openai import OpenAI
 from application.email import send_email_user
 from jinja2 import Template
 import random
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 # Set the OpenAI API key
 api_key = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=api_key) # Initialize the OpenAI client
@@ -122,16 +123,18 @@ def userlogin():
 
         if check_password_hash(user.password, password):
             app.logger.info("Password validation successful")
-            g.user = user
-            return jsonify({"user_id": user.id})
+            access_token = create_access_token(identity=user.id)
+            return jsonify({"user_id": user.id, "token": access_token})
         else:
             app.logger.warning("Password validation failed")
             return jsonify({"message": "Wrong Password"})
 
 
 # Define the route for user profile
-@app.route("/userprofile/<id>", methods=['POST','PUT','GET'])
-def userprofile(id):
+@app.route("/userprofile/", methods=['POST','PUT','GET'])
+@jwt_required()
+def userprofile():
+    id = get_jwt_identity()
     if request.method=='GET':
         user=User.query.filter_by(id=id).first()
         return jsonify(puser_to_dict(user))

@@ -48,6 +48,7 @@ const navbar = Vue.component("navbar", {
         })
         .then((data) => {
           localStorage.removeItem("user_id");
+          localStorage.removeItem("token");
           this.token = "";
           this.$router.push("/");
           location.reload();

@@ -4,6 +4,7 @@ from flask_security import Security, SQLAlchemySessionUserDatastore
 from application.models import db, User, Role
 from application.config import LocalDevelopmentConfig
 from sqlalchemy import text
+from flask_jwt_extended import JWTManager
 
 app = None
 
@@ -24,6 +25,7 @@ def create_app():
     app.app_context().push()
     user_datastore = SQLAlchemySessionUserDatastore(db.session, User, Role)
     app.security = Security(app, user_datastore)
+    jwt = JWTManager(app)
     with app.app_context():
         db.create_all()
         sync_sequence()  # Add this line

@@ -308,10 +308,12 @@ const Profile = Vue.component("profile", {
         });
     },
     fetchuser() {
-      fetch(`/userprofile/${this.user_id}`, {
+      const token = localStorage.getItem("token");
+      fetch(`/userprofile/`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
       })
         .then((response) => {
