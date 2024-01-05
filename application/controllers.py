@@ -124,7 +124,7 @@ def userlogin():
         if check_password_hash(user.password, password):
             app.logger.info("Password validation successful")
             access_token = create_access_token(identity=user.id)
-            return jsonify({"user_id": user.id, "token": access_token})
+            return jsonify({"token": access_token})
         else:
             app.logger.warning("Password validation failed")
             return jsonify({"message": "Wrong Password"})
@@ -155,8 +155,9 @@ def userprofile():
 
 # Define the route for currentuser
 @app.route('/currentuser/')
+@jwt_required()
 def currentuser():
-    user = getattr(g, 'user', None)
+    user=User.query.filter_by(id=get_jwt_identity()).first()
     if not user:
         return jsonify({'message': 'No user logged in'})
     return jsonify(cuser_to_dict(user))
@@ -199,15 +200,17 @@ def registeruser():
     return jsonify({'message': 'User created successfully!'})
 
 # Define the route for usertanscription
-@app.route('/usertranscript/<id>')
-def usertranscript(id):
-    user=UserTranscription.query.filter_by(user_id=int(id)).order_by(UserTranscription.time.desc()).limit(30)
+@app.route('/usertranscript/')
+@jwt_required()
+def usertranscript():
+    user=UserTranscription.query.filter_by(user_id=get_jwt_identity()).order_by(UserTranscription.time.desc()).limit(30)
     return jsonify([transcript_to_dict(user) for user in user])
 
 # Define the route for usertanscriptionanalysis
-@app.route('/usertranscriptanalysis/<id>')
-def compute_frequent_words_and_phrases(id):
-    user_id = int(id)
+@app.route('/usertranscriptanalysis/')
+@jwt_required()
+def compute_frequent_words_and_phrases():
+    user_id = get_jwt_identity()
 
     # Calculate the most frequently used words for the current user
     user_transcriptions = UserTranscription.query.filter_by(user_id=user_id).all()
@@ -226,9 +229,10 @@ def compute_frequent_words_and_phrases(id):
     return jsonify({'frequent_words_user': frequent_words_user, 'frequent_words_all_users': frequent_words_all_users})
 
 # Define the route for useruniquephrases
-@app.route('/useruniquephrases/<id>')
-def get_user_unique_phrases(id):
-    user_id = int(id)
+@app.route('/useruniquephrases/')
+@jwt_required()
+def get_user_unique_phrases():
+    user_id = get_jwt_identity()
 
     # Retrieve all transcriptions for the current user
     user_transcriptions = UserTranscription.query.filter_by(user_id=user_id).all()
@@ -256,9 +260,10 @@ def extract_phrases(text):
 
 
 # Define the route for similarusers
-@app.route('/similarusers/<id>')
-def find_similar_users(id):
-    current_user_id = int(id)
+@app.route('/similarusers/')
+@jwt_required()
+def find_similar_users():
+    current_user_id = get_jwt_identity()
 
     # Retrieve transcriptions for the current user
     current_user_transcriptions = UserTranscription.query.filter_by(user_id=current_user_id).all()

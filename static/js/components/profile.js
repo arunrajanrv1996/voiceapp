@@ -160,10 +160,12 @@ const Profile = Vue.component("profile", {
         });
     },
     fetchSimilarUsers() {
+      const token = localStorage.getItem("token");
       fetch(`/similarusers/${this.user_id}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
       })
         .then((response) => {
@@ -181,10 +183,12 @@ const Profile = Vue.component("profile", {
         });
     },
     fetchUniquePhrases() {
+      const token = localStorage.getItem("token");
       fetch(`/useruniquephrases/${this.user_id}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
       })
         .then((response) => {
@@ -202,10 +206,12 @@ const Profile = Vue.component("profile", {
         });
     },
     fetchTranscripts() {
+      const token = localStorage.getItem("token");
       fetch(`/usertranscriptanalysis/${this.user_id}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
       })
         .then((response) => {
@@ -247,11 +253,13 @@ const Profile = Vue.component("profile", {
         alert("Please select an image");
         return;
       }
-      fetch(`/userprofile/${this.user_id}`, {
+      const token = localStorage.getItem("token");
+      fetch(`/userprofile/`, {
         method: "PUT",
         body: JSON.stringify(this.formData),
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
       })
         .then((response) => {
@@ -278,12 +286,13 @@ const Profile = Vue.component("profile", {
         alert("Passwords do not match");
         return;
       }
-
-      fetch(`/userprofile/${this.user_id}`, {
+      const token = localStorage.getItem("token");
+      fetch(`/userprofile/`, {
         method: "PUT",
         body: JSON.stringify(this.formData),
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
       })
         .then((response) => {
@@ -342,7 +351,7 @@ const Profile = Vue.component("profile", {
     },
   },
   mounted() {
-    const token = localStorage.getItem("user_id");
+    const token = localStorage.getItem("token");
     if (token) {
       this.fetchuser();
       this.fetchTranscripts();

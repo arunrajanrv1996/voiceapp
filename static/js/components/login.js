@@ -239,7 +239,6 @@ const Login = Vue.component("login", {
             this.msg = data.message;
           } else {
             if (data.user_id) {
-              localStorage.setItem("user_id", data.user_id);
               localStorage.setItem("token", data.token);
               this.$router.push("/");
             }

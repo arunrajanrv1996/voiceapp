@@ -108,7 +108,7 @@ const home = Vue.component("home", {
       text: "your text will appear here...",
       language: "English",
       loading: false,
-      user_id: localStorage.getItem("user_id") || "",
+      user_id: "",
       usertranscript: [],
       notranscript: "No transcript found",
       showdownload: false,
@@ -116,11 +116,34 @@ const home = Vue.component("home", {
   },
   mounted() {
     this.setUpAudio();
-    if (localStorage.getItem("user_id")) {
+    if (localStorage.getItem("token")) {
       this.fetchtranscript();
     }
   },
   methods: {
+    currentUser() {
+      const token = localStorage.getItem("token");
+      fetch("/currentuser/", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      })
+        .then((response) => {
+          if (response.ok) {
+            return response.json();
+          } else {
+            throw new Error("No user found");
+          }
+        })
+        .then((data) => {
+          this.user_id = data.id;
+        })
+        .catch((error) => {
+          this.user_id = "";
+        });
+    },
     download(text) {
       var element = document.createElement("a");
       element.setAttribute(
@@ -134,10 +157,12 @@ const home = Vue.component("home", {
       document.body.removeChild(element);
     },
     fetchtranscript() {
-      fetch("/usertranscript/" + this.user_id, {
+      const token = localStorage.getItem("token");
+      fetch("/usertranscript/", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
       })
         .then((response) => {
