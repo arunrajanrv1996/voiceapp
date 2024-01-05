@@ -226,7 +226,7 @@ const home = Vue.component("home", {
             this.filedisable = false;
             this.showdownload = false;
             this.starttext = "Click on the mic to start recording";
-            this.text = data.text;
+            this.text = "your text will appear here...";
             alert(data.text);
           } else {
             this.micdisable = false;
