@@ -9,6 +9,7 @@ const router = new VueRouter({
     { path: "/register", name: "register", component: CreateUser },
     { path: "/login", name: "login", component: Login },
     { path: "/profile", name: "profile", component: Profile },
+    { path: "*", redirect: "/" },
   ],
 });
 
