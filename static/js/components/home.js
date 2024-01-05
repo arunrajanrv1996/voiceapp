@@ -166,6 +166,14 @@ const home = Vue.component("home", {
               if (this.recorder.state === "inactive") {
                 let blob = new Blob(this.audioChunks, { type: "audio/ogg" });
                 this.audio = blob;
+                if (this.audio.size > 5000000) {
+                  alert("Audio file size should be less than 5MB");
+                  this.micdisable = false;
+                  this.filedisable = false;
+                  this.starttext = "Click on the mic to start recording";
+                  this.audioChunks = [];
+                  return;
+                }
                 this.convertToText();
                 this.audioChunks = [];
               }
